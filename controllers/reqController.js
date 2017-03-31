@@ -2,7 +2,8 @@
 var models = require("../models");
 
 var reqController = (function(){
-  function reqController(){
+  function reqController(plain){
+    this.plain = (plain);
 
   }
 
@@ -15,7 +16,7 @@ var reqController = (function(){
         count: data.count,
         rows: data.rows.map(row=>{
           row.body = JSON.parse(row.body);
-          return row;
+          return (this.plain) ? row.dataValues : row;
         }),
       };
     })

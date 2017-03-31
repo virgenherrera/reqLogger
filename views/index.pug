@@ -1,5 +1,26 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div.row
+    div.col-md-12
+        h1= title
+  
+  div.row
+    div.col-md-12.well#content
+      each row,k in rows
+        div.thumbnail
+          div.caption
+            h3= 'Request #' + ( parseInt(k) + 1 )
+            p= "Created At: " + row.createdAt
+            h4 received data
+            pre
+              each bd,bk in row.body
+                  div
+                    span= "key: " + bk
+                    span= "value: " + bd
+               
+      
+      
+  div.row
+    div.col-md-2
+      p#count= "total rows: "+count
