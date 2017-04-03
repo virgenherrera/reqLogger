@@ -13,11 +13,7 @@ block content
             h3= 'Request #' + ( parseInt(k) + 1 )
             p= "Created At: " + row.createdAt
             h4 received data
-            pre
-              each bd,bk in row.body
-                  div
-                    span= "key: " + bk
-                    span= "value: " + bd
+            pre= JSON.stringify( row.body , null, 4 )
                
       
       
