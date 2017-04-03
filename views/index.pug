@@ -2,7 +2,10 @@ extends layout
 
 block content
   div.row
-    div.col-md-12
+    div.col-md-1
+      a.btn.btn-success.btn.lg.btn-block(href='/')
+        span.glyphicon.glyphicon-home
+    div.col-md-11
         h1= title
   
   div.row
@@ -10,9 +13,16 @@ block content
       each row,k in rows
         div.thumbnail
           div.caption
-            h3= 'Request #' + ( parseInt(k) + 1 )
-            p= "Created At: " + row.createdAt
-            h4 received data
+            div.row
+              div.col-md-6
+                h3= 'Request #' + ( parseInt(k) + 1 )
+              div.col-md-2.col-md-push-4
+                div.btn-group(role="group" data-reqId=row.id)
+                  button.btn.btn-success.button-view-request
+                    span.glyphicon.glyphicon-eye-open
+                  button.btn.btn-warning.button-delete-request
+                    span.glyphicon.glyphicon-remove
+            h4= "received data at: " + row.createdAt
             pre= JSON.stringify( row.body , null, 4 )
                
       

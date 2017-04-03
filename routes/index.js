@@ -3,10 +3,11 @@ var reqController = require('../controllers/reqController');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/:id?', function(req, res, next) {
+  var id = req.params.id || null;
   var ctrl = new reqController(true);
 
-  ctrl.find(null,function(query){
+  ctrl.find(id,function(query){
 var data = {
   title: 'Received requests:',
   count: query.data.count,

@@ -62,7 +62,7 @@ var reqController = (function(){
     })
     .then(data=>{
       return cb({
-        error: true,
+        error: false,
         data: data,
       });
     })
