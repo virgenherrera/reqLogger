@@ -18,6 +18,7 @@ var RequestModel = (function(){
   };
 
   RequestModel.prototype.get = function(id){
+    return window.location.href = this.baseUrl+'/'+id;
   };
 
   RequestModel.prototype.delete = function(id){
@@ -49,7 +50,7 @@ $(function(){
   var model = new RequestModel();
   $('.button-view-request').on('click',function(e){
     var id = $(this).parent().data('reqid');
-    window.location.href = model.baseUrl+'/'+id;
+    model.get(id);
   });
 
   $('.button-delete-request').on('click',function(e){
