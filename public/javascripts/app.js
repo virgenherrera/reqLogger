@@ -22,7 +22,7 @@ var RequestModel = (function(){
   };
 
   RequestModel.prototype.delete = function(id){
-var self = this;
+    var self = this;
     var url = this.baseUrl+this.api;
     url += id;
 
@@ -46,15 +46,59 @@ var self = this;
   return RequestModel;
 })();
 
+var RequestView = (function(){
+  function RequestView(){
+    this.selector = {
+      content: '#content',
+      count: '#count',
+    };
+    this.count = $( this.selector.count ).length;
+  }
+
+  RequestView.prototype.appendRequest = function(id,date,body){
+    body = JSON.stringify( body,null,4 );
+    this.count++;
+    var newE = $(
+    '<div class="thumbnail">' +
+      '<div class="caption">' +
+        '<div class="row">' +
+          '<div class="col-md-6">'  +
+            '<h3 data-reqnum="'+this.count+'">Request #<span>'+this.count+'</span></h3>'  +
+          '</div>'  +
+          '<div class="col-md-2 col-md-push-4">'  +
+            '<div class="btn-group" role="group" data-id="'+id+'">'  +
+              '<button class="btn btn-success button-view-request">'  +
+                '<span class="glyphicon glyphicon-eye-open"></span>'  +
+              '</button>' +
+              '<button class="btn btn-warning button-delete-request">'  +
+                '<span class="glyphicon glyphicon-remove"></span>'  +
+              '</button>' +
+            '</div>'  +
+          '</div>'  +
+        '</div>'  +
+        '<h4 data-createdAt="'+date+'">received data at: <span>'+date+'</span></h4>' +
+        '<pre data-body="'+body+'">'+body+'</pre>'  +
+      '</div>'  +
+    '</div>'
+    );
+
+    $(this.selector.content).append( newE );
+    return $(this.selector.count).text( this.count );
+  };
+
+  return RequestView;
+})();
+
 $(function(){
   var model = new RequestModel();
+
   $('.button-view-request').on('click',function(e){
-    var id = $(this).parent().data('reqid');
+    var id = $(this).parent().data('id');
     model.get(id);
   });
 
   $('.button-delete-request').on('click',function(e){
-    var id = $(this).parent().data('reqid');
+    var id = $(this).parent().data('id');
     model.delete(id);
   });
 });
