@@ -55,8 +55,16 @@ var RequestView = (function(){
     this.count = $( this.selector.count ).length;
   }
 
-  RequestView.prototype.appendRequest = function(id,date,body){
-    body = JSON.stringify( body,null,4 );
+  RequestView.prototype.scrollElem = function(sel){
+    return $('html, body').animate({
+      scrollTop: sel.offset().top
+    },1000);
+  };
+
+  RequestView.prototype.appendRequest = function(msg){
+    var id  = msg.id;
+    var date  = msg.date;
+    var body  = msg.body;
     this.count++;
     var newE = $(
     '<div class="thumbnail">' +
@@ -83,14 +91,26 @@ var RequestView = (function(){
     );
 
     $(this.selector.content).append( newE );
-    return $(this.selector.count).text( this.count );
+    $(this.selector.count).text( this.count );
+    this.scrollElem( newE );
+
+
+  };
+
+  RequestView.prototype.removeDeleted = function(id){
+    var sel = $('[data-id="'+id+'"]').parents().eq(3);
+
+    this.scrollElem( $('#count') );
+    sel.fadeOut(2000).remove();
   };
 
   return RequestView;
 })();
 
 $(function(){
+  var socket = new io();
   var model = new RequestModel();
+  var view = new RequestView();
 
   $('.button-view-request').on('click',function(e){
     var id = $(this).parent().data('id');
@@ -100,5 +120,13 @@ $(function(){
   $('.button-delete-request').on('click',function(e){
     var id = $(this).parent().data('id');
     model.delete(id);
+  });
+
+  socket.on('new request',function(msg){
+    return view.appendRequest(msg)
+  });
+
+  socket.on('deleted request',function(msg){
+    return view.removeDeleted(msg);
   });
 });

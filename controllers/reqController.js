@@ -1,11 +1,16 @@
 "use strict";
 var models = require("../models");
+var io = require('socket.io-client')('http://localhost:3001');
 
 var reqController = (function(){
   function reqController(plain){
     this.plain = (plain);
 
   }
+
+  reqController.prototype.notify = function(type,msg){
+    return io.emit(type,msg);
+  };
 
   reqController.prototype.find = function(id,cb){
     var where = ( id ) ? {where: {id: id}} : {};
@@ -21,7 +26,6 @@ var reqController = (function(){
       };
     })
     .then(rows=>{
-      console.log(typeof rows.rows[0].body);
       return cb({
         error: false,
         data: rows,
@@ -42,6 +46,12 @@ var reqController = (function(){
 
     models.request.create(data)
     .then((data)=>{
+      this.notify('new request',{
+        id: data.id,
+        body: data.body,
+        date: data.createdAt,
+      });
+
       return cb({
         error: false,
         data: data,
@@ -61,6 +71,7 @@ var reqController = (function(){
       return data.destroy();
     })
     .then(data=>{
+      this.notify('deleted request',id);
       return cb({
         error: false,
         data: data,

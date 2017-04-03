@@ -8,12 +8,11 @@ router.get('/:id?', function(req, res, next) {
   var ctrl = new reqController(true);
 
   ctrl.find(id,function(query){
-var data = {
-  title: 'Received requests:',
-  count: query.data.count,
-  rows: query.data.rows
-};
-    console.log(data.rows[0].body);
+    var data = {
+      title: 'Received requests:',
+      count: query.data.count,
+      rows: query.data.rows
+    };
 
     return res.render('index', data);
   });
