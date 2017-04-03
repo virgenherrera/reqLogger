@@ -38,3 +38,6 @@ jspm_packages
 
 # Local Env DB config
 config/config.json
+
+# Bower dependencies
+public/vendor
