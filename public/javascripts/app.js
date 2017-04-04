@@ -53,13 +53,38 @@ var RequestView = (function(){
       content: '#content',
       count: '#count',
     };
+
+    return this.init();
   }
+
+  RequestView.prototype.Model = new RequestModel();
+
+  RequestView.prototype.init = function(){
+    var model = this.Model;
+    $( this.selector.content ).on('bindNewActions',function(e){
+      $('.button-view-request').unbind().on('click',function(e){
+        var id = $(this).parent().data('id');
+        model.get(id);
+      });
+
+      $('.button-delete-request').unbind().on('click',function(e){
+        var id = $(this).parent().data('id');
+        model.delete(id);
+      });
+    });
+  };
+
+  RequestView.prototype.bindNewActions = function(){
+    return $( this.selector.content ).trigger('bindNewActions');
+  };
 
   RequestView.prototype.scrollElem = function(sel){
     return $('html, body').animate({
       scrollTop: sel.offset().top
     },1000);
   };
+
+
 
   RequestView.prototype.appendRequest = function(msg){
     var id  = msg.id;
@@ -91,6 +116,7 @@ var RequestView = (function(){
     );
 
     $(this.selector.content).append( newE );
+    this.bindNewActions();
     $(this.selector.count).text( count );
     this.scrollElem( newE );
   };
@@ -117,15 +143,7 @@ $(function(){
   var model = new RequestModel();
   var view = new RequestView();
 
-  $('.button-view-request').on('click',function(e){
-    var id = $(this).parent().data('id');
-    model.get(id);
-  });
-
-  $('.button-delete-request').on('click',function(e){
-    var id = $(this).parent().data('id');
-    model.delete(id);
-  });
+  view.bindNewActions();
 
   socket.on('new request',function(msg){
     return view.appendRequest(msg)
