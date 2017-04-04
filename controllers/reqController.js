@@ -5,11 +5,12 @@ var io = require('socket.io-client')('http://localhost:3001');
 var reqController = (function(){
   function reqController(plain){
     this.plain = (plain);
-
   }
 
   reqController.prototype.notify = function(type,msg){
-    return io.emit(type,msg);
+    return new Promise(function(F,R){
+      return F( io.emit(type,msg) );
+    });
   };
 
   reqController.prototype.find = function(id,cb){
@@ -45,13 +46,16 @@ var reqController = (function(){
     };
 
     models.request.create(data)
-    .then((data)=>{
+    .then(data=>{
       this.notify('new request',{
         id: data.id,
         body: data.body,
         date: data.createdAt,
       });
 
+      return data;
+    })
+    .then((data)=>{
       return cb({
         error: false,
         data: data,
@@ -71,7 +75,10 @@ var reqController = (function(){
       return data.destroy();
     })
     .then(data=>{
-      this.notify('deleted request',id);
+      this.notify('deleted request',data.id);
+      return data;
+    })
+    .then(data=>{
       return cb({
         error: false,
         data: data,

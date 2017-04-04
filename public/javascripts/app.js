@@ -18,7 +18,8 @@ var RequestModel = (function(){
   };
 
   RequestModel.prototype.get = function(id){
-    return window.location.href = this.baseUrl+'/'+id;
+    console.log(' wating for proper handler');
+    // return window.location.href = this.baseUrl+'/'+id;
   };
 
   RequestModel.prototype.delete = function(id){
@@ -52,7 +53,6 @@ var RequestView = (function(){
       content: '#content',
       count: '#count',
     };
-    this.count = $( this.selector.count ).length;
   }
 
   RequestView.prototype.scrollElem = function(sel){
@@ -65,13 +65,13 @@ var RequestView = (function(){
     var id  = msg.id;
     var date  = msg.date;
     var body  = msg.body;
-    this.count++;
+    var count = parseInt($( this.selector.content ).children().length) + 1;
     var newE = $(
     '<div class="thumbnail">' +
       '<div class="caption">' +
         '<div class="row">' +
           '<div class="col-md-6">'  +
-            '<h3 data-reqnum="'+this.count+'">Request #<span>'+this.count+'</span></h3>'  +
+            '<h3 data-reqnum="'+count+'">Request #<span>'+count+'</span></h3>'  +
           '</div>'  +
           '<div class="col-md-2 col-md-push-4">'  +
             '<div class="btn-group" role="group" data-id="'+id+'">'  +
@@ -91,17 +91,22 @@ var RequestView = (function(){
     );
 
     $(this.selector.content).append( newE );
-    $(this.selector.count).text( this.count );
+    $(this.selector.count).text( count );
     this.scrollElem( newE );
-
-
   };
 
   RequestView.prototype.removeDeleted = function(id){
     var sel = $('[data-id="'+id+'"]').parents().eq(3);
+    sel.remove();
 
-    this.scrollElem( $('#count') );
-    sel.fadeOut(2000).remove();
+    $( this.selector.count ).text( $( this.selector.content ).children().length );
+    this.scrollElem( $( this.selector.count ) );
+
+    $.each( $( this.selector.content ).children(),function(k,v){
+      var counter = parseInt(k) + 1;
+      $(v).find('h3 span').text( counter );
+      $
+    });
   };
 
   return RequestView;
