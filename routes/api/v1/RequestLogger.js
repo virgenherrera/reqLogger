@@ -6,7 +6,6 @@ var RequestController = require('../../../controllers/reqController');
 /* GET home page. */
 router
 .post('/', function(req, res, next) {
-  console.log(req);
   var ctrl = new RequestController();
   ctrl.save(req.body,(data)=>{
     var status = (data.error) ? 500 : 201;

@@ -42,7 +42,7 @@ var reqController = (function(){
 
   reqController.prototype.save = function(request,cb){
     var data = {
-      body: JSON.stringify( request )
+      body: JSON.stringify( request, null, 4 )
     };
 
     models.request.create(data)
