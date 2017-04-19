@@ -92,6 +92,33 @@ var reqController = (function(){
     });
   }
 
+  reqController.prototype.deleteBatch = function(iDs,cb){
+    models.request.sequelize.transaction(T1=>{
+      var promises = [];
+
+      for (var i = 0; i < iDs.length; i++) {
+        // iDs[i]
+        promises.push( models.request.destroy({ where: { id: iDs[i] } }, {transaction: T1 }) );
+        this.notify('deleted request', iDs[i] );
+      }
+
+      return Promise.all( promises );
+    })
+    .then(data=>{
+      console.log( data );
+      return cb({
+        error: false,
+        data: data,
+      });
+    })
+    .catch(error=>{
+      return cb({
+        error: true,
+        data: error,
+      });
+    });
+  };
+
   return reqController;
 })();
 

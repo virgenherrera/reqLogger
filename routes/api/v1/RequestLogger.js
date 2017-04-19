@@ -26,6 +26,27 @@ router
     .json( data.data );
   });
 })
+.delete('/batch',function(req,res,next){
+  var ctrl = new RequestController();
+  var iDs = req.body['ids[]'];
+
+  if( iDs.constructor !== Array ){
+      return res
+      .status(404)
+      .json({
+        error:true,
+        msg:'Exclusive endpoint for batch removal',
+        dataReceived:iDs});
+  }
+
+  ctrl.deleteBatch(iDs,(data)=>{
+    var status = (data.error) ? 404 : 200;
+
+    return res
+    .status(status)
+    .json( data.data );
+  });
+})
 .delete('/:id',function(req,res,next){
   var id = req.params.id;
   var ctrl = new RequestController();
@@ -37,6 +58,7 @@ router
     .status(status)
     .json( data.data );
   });
-});
+})
+;
 
 module.exports = router;

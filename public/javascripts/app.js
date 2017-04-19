@@ -18,31 +18,41 @@ var RequestModel = (function(){
   };
 
   RequestModel.prototype.get = function(id){
-    console.log(' wating for proper handler');
+    console.log('i will show expanded info for req with id: '+id);
     // return window.location.href = this.baseUrl+'/'+id;
   };
 
   RequestModel.prototype.delete = function(id){
-    var self = this;
     var url = this.baseUrl+this.api;
     url += id;
 
-    swal({
-      title: "Are you sure?",
-      text: "You will not be able to recover this request!",
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#DD6B55",
-      confirmButtonText: "Yes, delete it!",
-      closeOnConfirm: false
-    },
-    function(){
-      self.AJAX(url,'DELETE');
-      swal("Deleted!", "Your request with id: "+id+" has been deleted.", "success");
+    this.AJAX(url,'DELETE',null,function(){
+      swal({
+        title: "Deleted!",
+        text: "Your request with id: "+id+" has been deleted.",
+        timer: 1000,
+        showConfirmButton: false,
+        type: "success",
+      });
     });
   };
 
+  RequestModel.prototype.deleteSelected = function(selIds){
+    if(selIds.constructor !== Array) return;
 
+    var url = this.baseUrl+this.api+'batch';
+
+    this.AJAX(url,'DELETE',{ids:selIds},function(a){
+      console.log(a);
+      swal({
+        title: "Deleted!",
+        text: "Your selection has been deleted.",
+        timer: 1000,
+        showConfirmButton: false,
+        type: "success",
+      });
+    });
+  };
 
   return RequestModel;
 })();
@@ -61,21 +71,64 @@ var RequestView = (function(){
 
   RequestView.prototype.init = function(){
     var model = this.Model;
-    $( this.selector.content ).on('bindNewActions',function(e){
+
+    $('#delete-selected').unbind().on('click',function(e){
+      var selectedIDs = [];
+      // prevent default
+      e.preventDefault()
+
+      // walk selected requests
+      $.each($('.selected-request'),function(k,v){
+        // collect selected iDs
+        selectedIDs.push( $(v).data('id') );
+      });
+
+      // execute delete-selected if there are any selected
+      if( selectedIDs.length ){
+        model.deleteSelected( selectedIDs );
+      } else {
+        swal({
+          title: "Hey!",
+          text: "nothing selected to delete",
+          timer: 1500,
+          showConfirmButton: false,
+          type: "warning",
+        });
+      }
+    });
+
+    // publish bind options-actions
+    $( this.selector.content ).on('bind-option-buttons-action',function(e){
+      // binding for view-button
       $('.button-view-request').unbind().on('click',function(e){
-        var id = $(this).parent().data('id');
+        var reqItem = $(this).closest("[data-id]");
+        var id = reqItem.data('id');
         model.get(id);
       });
 
+      // binding for delete-button
       $('.button-delete-request').unbind().on('click',function(e){
-        var id = $(this).parent().data('id');
+        var reqItem = $(this).closest("[data-id]");
+        var id = reqItem.data('id');
         model.delete(id);
+      });
+
+      // binding for select-button
+      $('.button-select-request').unbind().on('click',function(e){
+        var reqItem = $(this).closest("[data-id]");
+        var id = reqItem.data('id');
+
+        //select req container
+        reqItem.toggleClass('selected-request');
+
+        // change button glyphicon
+        $(this).find('span').toggleClass('glyphicon-check glyphicon-ban-circle')
       });
     });
   };
 
   RequestView.prototype.bindNewActions = function(){
-    return $( this.selector.content ).trigger('bindNewActions');
+    return $( this.selector.content ).trigger('bind-option-buttons-action');
   };
 
   RequestView.prototype.scrollElem = function(sel){
@@ -84,53 +137,64 @@ var RequestView = (function(){
     },1000);
   };
 
-
-
   RequestView.prototype.appendRequest = function(msg){
     var id  = msg.id;
     var date  = msg.date;
     var body  = msg.body;
-    var count = parseInt($( this.selector.content ).children().length) + 1;
+    var count = parseInt($( '#request-container' ).children().length) + 1;
     var newE = $(
-    '<div class="thumbnail">' +
-      '<div class="caption">' +
-        '<div class="row">' +
-          '<div class="col-md-6">'  +
-            '<h3 data-reqnum="'+count+'">Request #<span>'+count+'</span></h3>'  +
-          '</div>'  +
-          '<div class="col-md-2 col-md-push-4">'  +
-            '<div class="btn-group" role="group" data-id="'+id+'">'  +
-              '<button class="btn btn-success button-view-request">'  +
+      '<div class="col-md-4 portfolio-item" data-id="'+id+'" style="display: none;">' +
+        '<h3>'  +
+          '<a href="#">'  +
+            'Request #' +
+            '<span>'+count+'</span>' +
+          '</a>'  +
+        '</h3>' +
+        '<ul>'  +
+          '<li>'  +
+            'received date:'  +
+            '<code>'+date+'</code>' +
+          '</li>' +
+          '<li>'  +
+            'Body:' +
+            '<pre style="height: 200px;">'+body+'</pre>'  +
+          '</li>' +
+        '</ul>' +
+        '<div class="panel-heading clearfix">'  +
+          '<div class="btn-group pull-right">'  +
+            '<div class="btn-group" role="group">'  +
+              '<button class="btn btn-default btn-sm button-view-request">' +
                 '<span class="glyphicon glyphicon-eye-open"></span>'  +
               '</button>' +
-              '<button class="btn btn-warning button-delete-request">'  +
+              '<button class="btn btn-default btn-sm button-delete-request">' +
                 '<span class="glyphicon glyphicon-remove"></span>'  +
+              '</button>' +
+              '<button class="btn btn-default btn-sm button-select-request">' +
+                '<span class="glyphicon glyphicon-check"></span>' +
               '</button>' +
             '</div>'  +
           '</div>'  +
+          '<h3 class="panel-title pull-right" style="padding-top: 7.5px;">Options:</h3>'  +
         '</div>'  +
-        '<h4 data-createdAt="'+date+'">received data at: <span>'+date+'</span></h4>' +
-        '<pre data-body="'+body+'">'+body+'</pre>'  +
-      '</div>'  +
-    '</div>'
+        '<hr>'  +
+      '</div>'
     );
 
-    $(this.selector.content).append( newE );
+    newE.appendTo('#request-container').show('slow');
+
     this.bindNewActions();
     $(this.selector.count).text( count );
     this.scrollElem( newE );
   };
 
   RequestView.prototype.removeDeleted = function(id){
-    var sel = $('[data-id="'+id+'"]').parents().eq(3);
-    sel.remove();
+    var sel = $('[data-id="'+id+'"]');
 
-    $( this.selector.count ).text( $( this.selector.content ).children().length );
-    this.scrollElem( $( this.selector.count ) );
+    sel.hide('slow', function(){ sel.remove(); });
+    $( this.selector.count ).text( $( '#request-container' ).children().length );
 
-    $.each( $( this.selector.content ).children(),function(k,v){
-      var counter = parseInt(k) + 1;
-      $(v).find('h3 span').text( counter );
+    $.each( $( '#request-container' ).children(),function(k,v){
+      $(v).find('h3 a span').text( k );
       $
     });
   };
@@ -140,7 +204,6 @@ var RequestView = (function(){
 
 $(function(){
   var socket = new io();
-  var model = new RequestModel();
   var view = new RequestView();
 
   view.bindNewActions();
