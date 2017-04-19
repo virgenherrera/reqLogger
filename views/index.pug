@@ -7,15 +7,15 @@ block content
       div.row
 
     div.col-md-4.portfolio-item(data-id=row.id)
-      h4 Request #
-        span= k
+      h3 
+        a(href="#") Request #
+          span= k
       ul
         li received date:
           code= row.createdAt
         li Body:
           pre(style="height: 200px")= JSON.stringify( row.body , null, 4 )
       div.panel-heading.clearfix
-        h3.panel-title.pull-left(style="padding-top: 7.5px;") Options:
         div.btn-group.pull-right
           div.btn-group(role="group")
             button.btn.btn-default.btn-sm.button-view-request
@@ -24,4 +24,5 @@ block content
               span.glyphicon.glyphicon-remove
             button.btn.btn-default.btn-sm.button-delete-request
               span.glyphicon.glyphicon-check
+        h3.panel-title.pull-right(style="padding-top: 7.5px;") Options:
       hr
