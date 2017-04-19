@@ -105,7 +105,6 @@ var reqController = (function(){
       return Promise.all( promises );
     })
     .then(data=>{
-      console.log( data );
       return cb({
         error: false,
         data: data,

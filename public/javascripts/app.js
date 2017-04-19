@@ -43,7 +43,6 @@ var RequestModel = (function(){
     var url = this.baseUrl+this.api+'batch';
 
     this.AJAX(url,'DELETE',{ids:selIds},function(a){
-      console.log(a);
       swal({
         title: "Deleted!",
         text: "Your selection has been deleted.",
@@ -72,6 +71,24 @@ var RequestView = (function(){
   RequestView.prototype.init = function(){
     var model = this.Model;
 
+    // bind select all button
+    $('#selected-all').unbind().on('click',function(e){
+      // prevent default
+      e.preventDefault();
+
+      // toogle select all text and icon button
+      if( $('#selected-all span').hasClass('glyphicon-ok') ){
+        $(this).html('Unselect All <span class="glyphicon glyphicon-remove"></span>');
+      } else {
+        $(this).html('Select All <span class="glyphicon glyphicon-ok"></span>');
+      }
+
+      // toggle select all requests and select btns
+      $('[data-id]').toggleClass('selected-request');
+      $('.button-select-request span').toggleClass('glyphicon-check glyphicon-ban-circle');
+    });
+
+    // bind delete all button
     $('#delete-selected').unbind().on('click',function(e){
       var selectedIDs = [];
       // prevent default
