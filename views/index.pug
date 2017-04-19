@@ -1,35 +1,27 @@
 extends layout
 
 block content
-  div.row
-    div.col-md-1
-      a.btn.btn-success.btn.lg.btn-block(href='/')
-        span.glyphicon.glyphicon-home
-    div.col-md-11
-        h1= title
-  
-  div.row
-    div.col-md-12.well#content
-      each row,k in rows
-        div.thumbnail
-          div.caption
-            div.row
-              div.col-md-6
-                h3 Request #
-                  span(data-reqnum=parseInt(k)+1)= parseInt(k) + 1
-              div.col-md-2.col-md-push-4
-                div.btn-group(role="group" data-id=row.id)
-                  button.btn.btn-success.button-view-request
-                    span.glyphicon.glyphicon-eye-open
-                  button.btn.btn-warning.button-delete-request
-                    span.glyphicon.glyphicon-remove
-            h4= 'received data at: '
-              span= row.createdAt
-            pre= JSON.stringify( row.body , null, 4 )
-               
-      
-      
-  div.row
-    div.col-md-2
-      p= "total rows: "
-        span#count= count
+  <!-- Requests Row -->
+  each row,k in rows
+    if (k+3)%3 == 0
+      div.row
+
+    div.col-md-4.portfolio-item(data-id=row.id)
+      h4 Request #
+        span= k
+      ul
+        li received date:
+          code= row.createdAt
+        li Body:
+          pre(style="height: 200px")= JSON.stringify( row.body , null, 4 )
+      div.panel-heading.clearfix
+        h3.panel-title.pull-left(style="padding-top: 7.5px;") Options:
+        div.btn-group.pull-right
+          div.btn-group(role="group")
+            button.btn.btn-default.btn-sm.button-view-request
+              span.glyphicon.glyphicon-eye-open
+            button.btn.btn-default.btn-sm.button-delete-request
+              span.glyphicon.glyphicon-remove
+            button.btn.btn-default.btn-sm.button-delete-request
+              span.glyphicon.glyphicon-check
+      hr
