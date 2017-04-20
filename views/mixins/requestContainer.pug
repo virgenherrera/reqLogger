@@ -1,8 +1,8 @@
-mixin requestContainer(reqData)
+mixin requestContainer(i,reqData)
   div.col-md-4.portfolio-item(data-id=reqData.id)
     h3 
       a(href="#") Request #
-        span= k
+        span= i
     ul
       li received date:
         code= reqData.createdAt

@@ -49,6 +49,8 @@ var RequestModel = (function(){
         timer: 1000,
         showConfirmButton: false,
         type: "success",
+      },function(){
+        return window.location.href = window.location.origin;
       });
     });
   };
@@ -144,22 +146,12 @@ var RequestView = (function(){
     });
   };
 
-  RequestView.prototype.bindNewActions = function(){
-    return $( this.selector.content ).trigger('bind-option-buttons-action');
+  RequestView.prototype.getRequestCount = function(){
+    return parseInt( $( '#request-container' ).children().length );
   };
 
-  RequestView.prototype.scrollElem = function(sel){
-    return $('html, body').animate({
-      scrollTop: sel.offset().top
-    },1000);
-  };
-
-  RequestView.prototype.appendRequest = function(msg){
-    var id  = msg.id;
-    var date  = msg.date;
-    var body  = msg.body;
-    var count = parseInt($( '#request-container' ).children().length) + 1;
-    var newE = $(
+  RequestView.prototype.createRequestElement = function(id,date,body,count){
+    return $(
       '<div class="col-md-4 portfolio-item" data-id="'+id+'" style="display: none;">' +
         '<h3>'  +
           '<a href="#">'  +
@@ -196,24 +188,61 @@ var RequestView = (function(){
         '<hr>'  +
       '</div>'
     );
+  };
+
+  // chaining methods
+  RequestView.prototype.updateCount = function(count){
+    if( count || count === 0 ) $('#request-counter').text(count);
+
+    return this;
+  };
+
+  RequestView.prototype.listRequests = function(){
+    $.each( $( '#request-container' ).children(),function(k,v){
+      $(v).find('h3 a span').text( k );
+    });
+
+    return this;
+  };
+
+  RequestView.prototype.bindNewActions = function(){
+    $( this.selector.content ).trigger('bind-option-buttons-action');
+    return this;
+  };
+
+  RequestView.prototype.scrollElem = function(sel){
+    $('html, body').animate({
+      scrollTop: sel.offset().top
+    },1000);
+
+    return this;
+  };
+
+  RequestView.prototype.appendRequest = function(msg){
+    var id  = msg.id;
+    var date  = msg.date;
+    var body  = msg.body;
+    var count = this.getRequestCount() + 1;
+    var newE = this.createRequestElement( id,date,body,count );
 
     newE.appendTo('#request-container').show('slow');
 
-    this.bindNewActions();
-    $(this.selector.count).text( count );
-    this.scrollElem( newE );
+    this.updateCount( count ).bindNewActions().scrollElem( newE );
+    return this;
   };
 
   RequestView.prototype.removeDeleted = function(id){
+    // get element in DOM
     var sel = $('[data-id="'+id+'"]');
 
+    // remove matched element from DOM
     sel.hide('slow', function(){ sel.remove(); });
-    $( this.selector.count ).text( $( '#request-container' ).children().length );
 
-    $.each( $( '#request-container' ).children(),function(k,v){
-      $(v).find('h3 a span').text( k );
-      $
-    });
+    // list remaining requests and update counter
+    this.listRequests();
+    this.updateCount( $( '#request-container' ).children().length-1 );
+
+    return this;
   };
 
   return RequestView;
