@@ -1,26 +1,9 @@
 extends layout
 
+include mixins/requestContainer.pug
+
 block content
   <!-- Requests Row -->
   div.row#request-container
     each row,k in rows
-      div.col-md-4.portfolio-item(data-id=row.id)
-        h3 
-          a(href="#") Request #
-            span= k
-        ul
-          li received date:
-            code= row.createdAt
-          li Body:
-            pre(style="height: 200px")= JSON.stringify( row.body , null, 4 )
-        div.panel-heading.clearfix
-          div.btn-group.pull-right
-            div.btn-group(role="group")
-              button.btn.btn-default.btn-sm.button-view-request
-                span.glyphicon.glyphicon-eye-open
-              button.btn.btn-default.btn-sm.button-delete-request
-                span.glyphicon.glyphicon-remove
-              button.btn.btn-default.btn-sm.button-select-request
-                span.glyphicon.glyphicon-check
-          h3.panel-title.pull-right(style="padding-top: 7.5px;") Options:
-        hr
+      +requestContainer( row )
